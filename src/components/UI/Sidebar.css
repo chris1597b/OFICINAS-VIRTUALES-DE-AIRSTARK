@@ -1,0 +1,104 @@
+.sidebar {
+  width: var(--sidebar-width);
+  height: 100%;
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  padding: var(--space-md);
+  color: var(--text-secondary);
+  transition: transform 0.3s ease;
+}
+
+.flex-grow {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.deliverables-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.deliverable-card {
+  background: var(--bg-card);
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 8px;
+  transition: background 0.2s;
+}
+
+.deliverable-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dev-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.dev-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.status-icon.completed { color: #10B981; }
+.status-icon.in-progress { color: #F59E0B; }
+.status-icon.start { color: var(--color-slate); }
+
+.dev-status-text {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.dev-status-text.completed { color: #10B981; }
+.dev-status-text.in-progress { color: #F59E0B; }
+.dev-status-text.start { color: var(--color-slate); }
+
+/* Team Grid */
+.team-grid {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.mini-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-card);
+}
+
+.mini-avatar.more {
+  background: var(--color-light-navy);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translateX(-100%); /* Hidden by default */
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}

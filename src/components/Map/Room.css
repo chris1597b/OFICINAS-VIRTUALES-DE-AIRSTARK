@@ -1,0 +1,48 @@
+.room {
+  position: absolute;
+  border: 2px solid var(--color-light-navy);
+  background: rgba(17, 34, 64, 0.5); /* Semi-transparent floor */
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* Allow walking through? Or should they be solid? For now visual only */
+}
+
+.room-label {
+  position: absolute;
+  top: -24px;
+  left: 0;
+  color: var(--color-slate);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  width: 100%;
+  text-align: center;
+}
+
+/* Room Types */
+.type-private {
+  border-color: rgba(100, 255, 218, 0.3);
+}
+
+.type-meeting {
+  border-color: rgba(255, 255, 255, 0.2);
+  border-radius: 20px; /* Rounded meeting room */
+}
+
+.type-innovation {
+  border-color: var(--color-soft-teal);
+  background: rgba(100, 255, 218, 0.05); /* Slight tint */
+  border-style: dashed;
+}
+
+/* Floor decorations (optional) */
+.room-floor {
+  width: 100%;
+  height: 100%;
+  opacity: 0.1;
+  background-image: radial-gradient(var(--color-slate) 1px, transparent 1px);
+  background-size: 10px 10px;
+}

@@ -1,0 +1,183 @@
+.room-controls-panel {
+  position: absolute;
+  top: 60px; /* Lower for mobile header space */
+  right: 20px;
+  width: 300px;
+  height: 450px; /* Taller */
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-md);
+  z-index: 200;
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+}
+
+/* ... existing styles ... */
+@keyframes slideIn {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.room-header {
+  padding: 15px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+}
+
+.room-title {
+  margin: 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-primary);
+}
+
+.edit-icon {
+  background: none;
+  border: none;
+  color: var(--color-slate);
+  cursor: pointer;
+  padding: 2px;
+}
+
+.edit-icon:hover { color: var(--color-soft-teal); }
+
+.name-edit-box {
+  display: flex;
+  gap: 5px;
+}
+
+.name-input {
+  flex: 1;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.save-btn {
+  background: var(--color-soft-teal);
+  color: var(--bg-primary);
+  border-radius: 4px;
+  padding: 0 10px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.tabs {
+  display: flex;
+  background: var(--bg-card);
+}
+
+.tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 10px;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  border-bottom: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.tab-btn.active {
+  color: var(--color-soft-teal);
+  border-bottom-color: var(--color-soft-teal);
+  background: rgba(100, 255, 218, 0.05);
+}
+
+.panel-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Views */
+.chat-view, .notes-view, .todos-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.messages-list, .todo-list-scroll {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+}
+
+.todo-item-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.todo-item-row.completed {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.add-icon {
+  background: none;
+  border: none;
+  color: var(--color-soft-teal);
+  cursor: pointer;
+}
+
+.chat-input-area {
+  padding: 10px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  gap: 10px;
+}
+
+.chat-input-area input {
+  flex: 1;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  padding: 8px 12px;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.notes-area {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 10px;
+  color: var(--text-primary);
+  resize: none;
+  font-family: inherit;
+}
+
+.empty-state {
+  color: var(--text-secondary);
+  opacity: 0.5;
+  text-align: center; 
+  margin-top: 20px;
+  font-size: 0.8rem;
+}
+
+.chat-msg {
+  margin-bottom: 8px;
+  word-break: break-word;
+}
+
+.msg-user {
+  font-weight: 700;
+  color: var(--color-soft-teal);
+}

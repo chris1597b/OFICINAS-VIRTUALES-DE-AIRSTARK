@@ -1,0 +1,43 @@
+:root {
+  /* Brand Colors - HealthTech Identity */
+  --color-bio-blue: #0A192F; /* Deep foundation */
+  --color-navy: #112240; /* Secondary depth */
+  --color-light-navy: #233554; /* Component surfaces */
+  --color-slate: #8892B0; /* Muted text */
+  --color-light-slate: #A8B2D1; /* Primary body text */
+  --color-clinical-white: #E6F1FF; /* Headings, highlights */
+  --color-soft-teal: #64FFDA; /* Primary accent (Innovation) */
+  --color-alert: #FF5A5F; /* Notification/Alert */
+  
+  /* Semantic Colors */
+  --bg-primary: var(--color-bio-blue);
+  --bg-secondary: var(--color-navy);
+  --bg-card: var(--color-light-navy);
+  --text-primary: var(--color-clinical-white);
+  --text-secondary: var(--color-slate);
+  --border-subtle: rgba(136, 146, 176, 0.2);
+  
+  /* Dimensions */
+  --sidebar-width: 250px;
+  --header-height: 60px;
+  
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  
+  /* Typography */
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  
+  /* Effects */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
+  --glow: 0 0 10px rgba(100, 255, 218, 0.1);
+}

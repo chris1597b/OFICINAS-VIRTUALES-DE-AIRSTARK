@@ -1,0 +1,79 @@
+.toolbar-container {
+  position: absolute;
+  bottom: var(--space-lg);
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.toolbar-island {
+  pointer-events: auto;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(10px);
+}
+
+.tool-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.tool-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  color: var(--text-primary);
+}
+
+.tool-btn.active {
+  background: var(--color-soft-teal);
+  color: var(--bg-primary);
+  box-shadow: 0 0 10px rgba(100, 255, 218, 0.4);
+}
+
+.tool-btn.secondary {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+}
+
+.separator {
+  width: 1px;
+  height: 24px;
+  background: var(--border-subtle);
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .toolbar-island {
+    padding: 8px 16px;
+    gap: 8px;
+    margin-bottom: 20px; /* Raise a bit on mobile */
+  }
+  
+  .tool-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .mobile-only {
+    display: flex;
+  }
+}
