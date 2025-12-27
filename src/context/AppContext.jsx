@@ -1,54 +1,141 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import {
+    auth,
+    googleProvider,
+    db
+} from '../firebase';
+import {
+    signInWithPopup,
+    onAuthStateChanged,
+    signOut
+} from 'firebase/auth';
+import {
+    doc,
+    setDoc,
+    onSnapshot,
+    collection,
+    addDoc,
+    updateDoc,
+    query,
+    orderBy,
+    arrayUnion,
+    arrayRemove
+} from 'firebase/firestore';
 
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
     // User State
-    const [user, setUser] = useState(null); // { name, avatar, id }
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     // Media State
     const [media, setMedia] = useState({ mic: true, cam: true });
 
+    // Domain State
+    const [rooms, setRooms] = useState([]);
+    const [deliverables, setDeliverables] = useState({});
+    const [chats, setChats] = useState({ global: [] });
+
     const toggleMic = () => setMedia(prev => ({ ...prev, mic: !prev.mic }));
     const toggleCam = () => setMedia(prev => ({ ...prev, cam: !prev.cam }));
 
-    // App State
-    const [rooms, setRooms] = useState([
-        { id: 'o1', name: 'Oficina 1', notes: '' },
-        { id: 'o2', name: 'Oficina 2', notes: '' },
-        { id: 'o3', name: 'Oficina 3', notes: '' },
-        { id: 'o4', name: 'Oficina 4', notes: '' },
-        { id: 'o5', name: 'Oficina 5', notes: '' },
-        { id: 'o6', name: 'Oficina 6', notes: '' },
-        { id: 'o7', name: 'Oficina 7', notes: '' },
-        { id: 'o8', name: 'Oficina 8', notes: '' },
-        { id: 'o9', name: 'Oficina 9', notes: '' },
-        { id: 'o10', name: 'Oficina 10', notes: '' },
-        { id: 'm1', name: 'Sala de Juntas', notes: '' },
-        { id: 'lab', name: 'Laboratorio de Innovación', notes: '' },
-    ]);
+    // Firebase Auth Listener
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+            if (firebaseUser) {
+                setUser({
+                    id: firebaseUser.uid,
+                    name: firebaseUser.displayName,
+                    avatar: firebaseUser.photoURL,
+                    email: firebaseUser.email,
+                    x: 750,
+                    y: 500
+                });
+            } else {
+                setUser(null);
+            }
+            setLoading(false);
+        });
+        return unsubscribe;
+    }, []);
 
-    // Deliverables State { [roomId]: [{ id, text, completed }] }
-    const [deliverables, setDeliverables] = useState({
-        'o1': [{ id: 1, text: 'Definir Roadmap Q1', completed: true }, { id: 2, text: 'Presupuesto Inicial', completed: false }],
-        'o2': [{ id: 1, text: 'Wireframes App', completed: false }],
-        'o3': [],
-    });
+    // Firestore Sync: Rooms
+    useEffect(() => {
+        const unsubscribe = onSnapshot(collection(db, "rooms"), (snapshot) => {
+            const roomsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            if (roomsData.length > 0) {
+                setRooms(roomsData);
+            } else {
+                // Initial Seed if empty
+                const initialRooms = [
+                    { id: 'o1', name: 'Oficina 1', notes: '' },
+                    { id: 'o2', name: 'Oficina 2', notes: '' },
+                    { id: 'm1', name: 'Sala de Juntas', notes: '' },
+                    { id: 'lab', name: 'Laboratorio de Innovación', notes: '' },
+                ];
+                setRooms(initialRooms);
+            }
+        });
+        return unsubscribe;
+    }, []);
 
-    const addDeliverable = (roomId, text) => {
-        setDeliverables(prev => ({
-            ...prev,
-            [roomId]: [...(prev[roomId] || []), { id: Date.now(), text, completed: false }]
-        }));
+    // Firestore Sync: Deliverables
+    useEffect(() => {
+        const unsubscribe = onSnapshot(collection(db, "deliverables"), (snapshot) => {
+            const devData = {};
+            snapshot.docs.forEach(doc => {
+                devData[doc.id] = doc.data().items || [];
+            });
+            setDeliverables(devData);
+        });
+        return unsubscribe;
+    }, []);
+
+    // Authentication Logic
+    const loginWithGoogle = async () => {
+        try {
+            await signInWithPopup(auth, googleProvider);
+        } catch (error) {
+            console.error("Error al iniciar sesión con Google:", error);
+            // Fallback para desarrollo si no hay config
+            alert("No se pudo conectar con Google. Verifica tu configuración de Firebase.");
+        }
     };
 
-    const toggleDeliverable = (roomId, itemId) => {
-        setDeliverables(prev => ({
-            ...prev,
-            [roomId]: (prev[roomId] || []).map(item =>
-                item.id === itemId ? { ...item, completed: !item.completed } : item
-            )
-        }));
+    const logout = () => signOut(auth);
+
+    // Room Actions
+    const updateRoomName = async (id, newName) => {
+        try {
+            await setDoc(doc(db, "rooms", id), { name: newName }, { merge: true });
+        } catch (e) { console.error(e); }
+    };
+
+    const updateRoomNote = async (id, note) => {
+        try {
+            await setDoc(doc(db, "rooms", id), { notes: note }, { merge: true });
+        } catch (e) { console.error(e); }
+    };
+
+    // Deliverable Actions
+    const addDeliverable = async (roomId, text) => {
+        const newItem = { id: Date.now(), text, completed: false };
+        try {
+            await setDoc(doc(db, "deliverables", roomId), {
+                items: arrayUnion(newItem)
+            }, { merge: true });
+        } catch (e) { console.error(e); }
+    };
+
+    const toggleDeliverable = async (roomId, itemId) => {
+        const roomItems = deliverables[roomId] || [];
+        const newItems = roomItems.map(item =>
+            item.id === itemId ? { ...item, completed: !item.completed } : item
+        );
+        try {
+            await setDoc(doc(db, "deliverables", roomId), { items: newItems }, { merge: true });
+        } catch (e) { console.error(e); }
     };
 
     const getDeliverableStatus = (roomId) => {
@@ -60,46 +147,35 @@ export const AppProvider = ({ children }) => {
         return 'En Proceso';
     };
 
-    const [chats, setChats] = useState({
-        global: [],
-        // room_id: []
-    });
-
-    const login = (name, photo) => {
-        setUser({
-            id: Date.now().toString(),
-            name,
-            avatar: photo || `https://ui-avatars.com/api/?name=${name}&background=random`,
-            x: 750, // Start center
-            y: 500
-        });
-    };
-
-    const updateRoomName = (id, newName) => {
-        setRooms(prev => prev.map(r => r.id === id ? { ...r, name: newName } : r));
-    };
-
-    const updateRoomNote = (id, note) => {
-        setRooms(prev => prev.map(r => r.id === id ? { ...r, notes: note } : r));
-    };
-
-    const addChatMessage = (contextId, message) => {
-        setChats(prev => ({
-            ...prev,
-            [contextId]: [...(prev[contextId] || []), {
+    // Chat Actions
+    const addChatMessage = async (contextId, text) => {
+        if (!user) return;
+        try {
+            await addDoc(collection(db, `chats_${contextId}`), {
                 id: Date.now(),
                 user: user.name,
-                text: message,
+                text,
                 timestamp: new Date()
-            }]
-        }));
+            });
+        } catch (e) { console.error(e); }
+    };
+
+    // Sync Chat (Ejemplo para una sala activa)
+    const subscribeToChat = (contextId, callback) => {
+        const q = query(collection(db, `chats_${contextId}`), orderBy("timestamp", "asc"));
+        return onSnapshot(q, (snapshot) => {
+            const msgs = snapshot.docs.map(doc => doc.data());
+            callback(msgs);
+        });
     };
 
     return (
         <AppContext.Provider value={{
             user,
             setUser,
-            login,
+            loading,
+            loginWithGoogle,
+            logout,
             media,
             toggleMic,
             toggleCam,
@@ -108,6 +184,7 @@ export const AppProvider = ({ children }) => {
             updateRoomNote,
             chats,
             addChatMessage,
+            subscribeToChat,
             deliverables,
             addDeliverable,
             toggleDeliverable,

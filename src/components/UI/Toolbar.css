@@ -40,6 +40,20 @@
   color: var(--text-primary);
 }
 
+.tool-btn.secondary:hover {
+  background: var(--color-light-navy);
+  color: var(--color-clinical-white);
+}
+
+.tool-btn.danger {
+  color: var(--color-alert);
+}
+
+.tool-btn.danger:hover {
+  background: rgba(255, 90, 95, 0.1);
+  color: var(--color-alert);
+}
+
 .tool-btn.active {
   background: var(--color-soft-teal);
   color: var(--bg-primary);

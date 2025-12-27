@@ -1,18 +1,24 @@
 .room-controls-panel {
-  position: absolute;
-  top: 60px; /* Lower for mobile header space */
-  right: 20px;
-  width: 300px;
-  height: 450px; /* Taller */
+  position: relative; /* Posicionado por el overlay del modal */
+  width: 500px;
+  height: 600px;
+  max-width: 90vw;
+  max-height: 85vh;
   background: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-md);
-  z-index: 200;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  z-index: 2001;
   overflow: hidden;
-  animation: slideIn 0.3s ease-out;
+  animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(15px);
+}
+
+@keyframes modalPop {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 /* ... existing styles ... */
@@ -22,9 +28,34 @@
 }
 
 .room-header {
-  padding: 15px;
+  padding: 20px;
   border-bottom: 1px solid var(--border-subtle);
   background: var(--bg-card);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left {
+  flex: 1;
+}
+
+.close-panel-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-slate);
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.close-panel-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-alert);
 }
 
 .room-title {

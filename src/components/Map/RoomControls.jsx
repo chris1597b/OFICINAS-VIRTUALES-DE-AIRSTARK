@@ -1,19 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { MessageSquare, FileText, CheckSquare, Edit2, Plus, Trash2 } from 'lucide-react';
+import { MessageSquare, FileText, CheckSquare, Edit2, Plus, X } from 'lucide-react';
 import './RoomControls.css';
 
-export const RoomControls = ({ currentRoom }) => {
-    const { updateRoomName, updateRoomNote, chats, addChatMessage, deliverables, addDeliverable, toggleDeliverable } = useApp();
-    const [activeTab, setActiveTab] = useState('chat'); // chat | notes | todos
+export const RoomControls = ({ currentRoom, onClose }) => {
+    const {
+        updateRoomName,
+        updateRoomNote,
+        addChatMessage,
+        subscribeToChat,
+        deliverables,
+        addDeliverable,
+        toggleDeliverable
+    } = useApp();
+
+    const [activeTab, setActiveTab] = useState('chat');
     const [isEditingName, setIsEditingName] = useState(false);
     const [newName, setNewName] = useState(currentRoom.name);
     const [message, setMessage] = useState('');
     const [newTodo, setNewTodo] = useState('');
+    const [roomChat, setRoomChat] = useState([]);
 
     useEffect(() => {
         setNewName(currentRoom.name);
-    }, [currentRoom]);
+        // Subscribe to chat for this room
+        const unsubscribe = subscribeToChat(currentRoom.id, (messages) => {
+            setRoomChat(messages);
+        });
+        return () => unsubscribe();
+    }, [currentRoom, subscribeToChat]);
 
     const handleNameSave = () => {
         updateRoomName(currentRoom.id, newName);
@@ -36,30 +51,34 @@ export const RoomControls = ({ currentRoom }) => {
         }
     };
 
-    const roomChat = chats[currentRoom.id] || [];
     const roomTodos = deliverables[currentRoom.id] || [];
 
     return (
         <div className="room-controls-panel">
             <div className="room-header">
-                {isEditingName ? (
-                    <div className="name-edit-box">
-                        <input
-                            value={newName}
-                            onChange={(e) => setNewName(e.target.value)}
-                            className="name-input"
-                            autoFocus
-                        />
-                        <button onClick={handleNameSave} className="save-btn">Guardar</button>
-                    </div>
-                ) : (
-                    <h3 className="room-title">
-                        {currentRoom.name}
-                        <button onClick={() => setIsEditingName(true)} className="edit-icon" title="Cambiar Nombre">
-                            <Edit2 size={12} />
-                        </button>
-                    </h3>
-                )}
+                <div className="header-left">
+                    {isEditingName ? (
+                        <div className="name-edit-box">
+                            <input
+                                value={newName}
+                                onChange={(e) => setNewName(e.target.value)}
+                                className="name-input"
+                                autoFocus
+                            />
+                            <button onClick={handleNameSave} className="save-btn">Guardar</button>
+                        </div>
+                    ) : (
+                        <h3 className="room-title">
+                            {currentRoom.name}
+                            <button onClick={() => setIsEditingName(true)} className="edit-icon" title="Cambiar Nombre">
+                                <Edit2 size={12} />
+                            </button>
+                        </h3>
+                    )}
+                </div>
+                <button className="close-panel-btn" onClick={onClose}>
+                    <X size={20} />
+                </button>
             </div>
 
             <div className="tabs">
@@ -70,7 +89,7 @@ export const RoomControls = ({ currentRoom }) => {
                     <FileText size={14} /> Notas
                 </button>
                 <button className={`tab-btn ${activeTab === 'todos' ? 'active' : ''}`} onClick={() => setActiveTab('todos')}>
-                    <CheckSquare size={14} /> Tareas
+                    <CheckSquare size={14} /> Entregables
                 </button>
             </div>
 
@@ -78,15 +97,15 @@ export const RoomControls = ({ currentRoom }) => {
                 {activeTab === 'chat' && (
                     <div className="chat-view">
                         <div className="messages-list">
-                            {roomChat.length === 0 && <div className="empty-state">No hay mensajes.</div>}
-                            {roomChat.map(msg => (
-                                <div key={msg.id} className="chat-msg">
+                            {roomChat.length === 0 && <div className="empty-state">No hay mensajes aún.</div>}
+                            {roomChat.map((msg, idx) => (
+                                <div key={idx} className="chat-msg">
                                     <span className="msg-user">{msg.user}:</span> {msg.text}
                                 </div>
                             ))}
                         </div>
                         <form onSubmit={handleSendMessage} className="chat-input-area">
-                            <input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Enviar mensaje..." />
+                            <input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Escribe un mensaje..." />
                         </form>
                     </div>
                 )}
@@ -97,7 +116,7 @@ export const RoomControls = ({ currentRoom }) => {
                             className="notes-area"
                             value={currentRoom.notes || ''}
                             onChange={(e) => updateRoomNote(currentRoom.id, e.target.value)}
-                            placeholder="Deja una nota para esta sala..."
+                            placeholder="Anota algo importante aquí..."
                         />
                     </div>
                 )}
@@ -118,7 +137,7 @@ export const RoomControls = ({ currentRoom }) => {
                             ))}
                         </div>
                         <form onSubmit={handleAddTodo} className="chat-input-area">
-                            <input value={newTodo} onChange={(e) => setNewTodo(e.target.value)} placeholder="Agregar entregable..." />
+                            <input value={newTodo} onChange={(e) => setNewTodo(e.target.value)} placeholder="Nuevo entregable..." />
                             <button type="submit" className="add-icon"><Plus size={16} /></button>
                         </form>
                     </div>

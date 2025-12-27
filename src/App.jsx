@@ -6,7 +6,17 @@ import { Onboarding } from './components/UI/Onboarding';
 import './index.css';
 
 const AppContent = () => {
-  const { user } = useApp();
+  const { user, loading } = useApp();
+
+  if (loading) {
+    return (
+      <div className="loading-screen">
+        <div className="loader"></div>
+        <p>Cargando Oficina Virtual...</p>
+      </div>
+    );
+  }
+
   return (
     <>
       {!user && <Onboarding />}

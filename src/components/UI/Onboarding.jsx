@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Camera } from 'lucide-react';
+import { Camera, LogIn } from 'lucide-react';
 import './Onboarding.css';
 
 export const Onboarding = () => {
-    const { login } = useApp();
+    const { loginWithGoogle, login } = useApp();
     const [name, setName] = useState('');
     const [photo, setPhoto] = useState(null);
 
@@ -12,18 +12,14 @@ export const Onboarding = () => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setPhoto(reader.result);
-            };
+            reader.onloadend = () => setPhoto(reader.result);
             reader.readAsDataURL(file);
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleManualSubmit = (e) => {
         e.preventDefault();
-        if (name.trim()) {
-            login(name, photo);
-        }
+        if (name.trim()) login(name, photo);
     };
 
     return (
@@ -31,33 +27,43 @@ export const Onboarding = () => {
             <div className="onboarding-card">
                 <div className="brand-header">
                     <h1>AIRSTARK</h1>
-                    <p>Espacio de Trabajo Virtual</p>
+                    <p>Oficina Virtual HealthTech</p>
                 </div>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="photo-upload-section">
-                        <div className="photo-preview" style={{ backgroundImage: photo ? `url(${photo})` : 'none' }}>
-                            {!photo && <Camera size={32} opacity={0.5} />}
+                <div className="login-options">
+                    <button className="google-login-btn" onClick={loginWithGoogle}>
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+                        Entrar con cuenta de Google
+                    </button>
+
+                    <div className="divider">
+                        <span>O entrar como invitado</span>
+                    </div>
+
+                    <form onSubmit={handleManualSubmit}>
+                        <div className="photo-upload-section">
+                            <div className="photo-preview" style={{ backgroundImage: photo ? `url(${photo})` : 'none' }}>
+                                {!photo && <Camera size={24} opacity={0.5} />}
+                            </div>
+                            <label className="upload-btn">
+                                Foto
+                                <input type="file" accept="image/*" onChange={handlePhotoUpload} hidden />
+                            </label>
                         </div>
-                        <label className="upload-btn">
-                            Subir Foto
-                            <input type="file" accept="image/*" onChange={handlePhotoUpload} hidden />
-                        </label>
-                    </div>
 
-                    <div className="input-group">
-                        <label>Nombre Completo</label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Ej: Dra. Ana Pérez"
-                            required
-                        />
-                    </div>
+                        <div className="input-group">
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Tu nombre..."
+                                required
+                            />
+                        </div>
 
-                    <button type="submit" className="join-btn">Entrar a la Oficina</button>
-                </form>
+                        <button type="submit" className="join-btn">Entrar</button>
+                    </form>
+                </div>
             </div>
         </div>
     );

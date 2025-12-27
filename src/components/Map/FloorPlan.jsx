@@ -25,6 +25,7 @@ const ROOM_COORDS = [
 export const FloorPlan = () => {
     const { user, setUser, rooms } = useApp();
     const [activeRoomId, setActiveRoomId] = useState(null);
+    const [selectedRoomId, setSelectedRoomId] = useState(null); // Modal state
     const [zoom, setZoom] = useState(1);
     const containerRef = useRef(null);
 
@@ -66,7 +67,6 @@ export const FloorPlan = () => {
     const handleMapClick = (e) => {
         if (!user) return;
         const rect = e.currentTarget.getBoundingClientRect();
-        // Since we use transform scale, we need to adjust the coordinates
         const x = (e.clientX - rect.left) / zoom;
         const y = (e.clientY - rect.top) / zoom;
 
@@ -87,6 +87,7 @@ export const FloorPlan = () => {
     const getRoomData = (id) => rooms.find(r => r.id === id) || {};
 
     const activeRoomData = activeRoomId ? getRoomData(activeRoomId) : null;
+    const selectedRoomData = selectedRoomId ? getRoomData(selectedRoomId) : null;
 
     const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.1, 2));
     const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.5));
@@ -105,8 +106,8 @@ export const FloorPlan = () => {
     };
 
     return (
-        <div className="floor-plan-container" ref={containerRef}>
-            {/* HUD for Room Status */}
+        <div className="floor-plan-wrapper">
+            {/* HUD para Room Status - Siempre visible */}
             {activeRoomData ? (
                 <div className="room-overlay-indicator in-room">
                     Estás en: <strong>{activeRoomData.name}</strong>
@@ -117,7 +118,7 @@ export const FloorPlan = () => {
                 </div>
             )}
 
-            {/* Map Controls */}
+            {/* Map Controls - Siempre visibles */}
             <div className="map-controls">
                 <button className="control-btn" onClick={handleZoomIn} title="Acercar">
                     <ZoomIn size={18} />
@@ -130,46 +131,59 @@ export const FloorPlan = () => {
                 </button>
             </div>
 
-            {/* Room Controls Panel */}
-            {activeRoomData && <RoomControls currentRoom={activeRoomData} />}
-
-            <div
-                className="floor-plan-map"
-                onClick={handleMapClick}
-                style={{
-                    transform: `scale(${zoom})`,
-                    transformOrigin: 'top left'
-                }}
-            >
-                {ROOM_COORDS.map(coords => {
-                    const roomState = getRoomData(coords.id);
-                    return (
-                        <Room
-                            key={coords.id}
-                            type={coords.type}
-                            label={roomState.name || coords.id}
-                            x={coords.x}
-                            y={coords.y}
-                            width={coords.w}
-                            height={coords.h}
+            {/* Room Controls Modal - Opens when room icon clicked */}
+            {selectedRoomData && (
+                <div className="modal-overlay" onClick={() => setSelectedRoomId(null)}>
+                    <div onClick={(e) => e.stopPropagation()}>
+                        <RoomControls
+                            currentRoom={selectedRoomData}
+                            onClose={() => setSelectedRoomId(null)}
                         />
-                    );
-                })}
+                    </div>
+                </div>
+            )}
 
-                {/* User Avatar */}
-                {user && (
-                    <Avatar
-                        x={user.x - 24} // Center offset
-                        y={user.y - 24}
-                        name={user.name}
-                        avatarUrl={user.avatar}
-                        isMe={true}
-                    />
-                )}
+            <div className="floor-plan-container" ref={containerRef}>
+                <div
+                    className="floor-plan-map"
+                    onClick={handleMapClick}
+                    style={{
+                        transform: `scale(${zoom})`,
+                        transformOrigin: 'top left'
+                    }}
+                >
+                    {ROOM_COORDS.map(coords => {
+                        const roomState = getRoomData(coords.id);
+                        return (
+                            <Room
+                                key={coords.id}
+                                id={coords.id}
+                                type={coords.type}
+                                label={roomState.name || coords.id}
+                                x={coords.x}
+                                y={coords.y}
+                                width={coords.w}
+                                height={coords.h}
+                                onOpenControls={() => setSelectedRoomId(coords.id)}
+                            />
+                        );
+                    })}
 
-                {/* Mock other users */}
-                <Avatar x={1100} y={200} name="Dra. Sarah" avatarUrl="https://i.pravatar.cc/150?u=1" />
-                <Avatar x={1150} y={550} name="Marc" avatarUrl="https://i.pravatar.cc/150?u=2" />
+                    {/* User Avatar */}
+                    {user && (
+                        <Avatar
+                            x={user.x - 24} // Center offset
+                            y={user.y - 24}
+                            name={user.name}
+                            avatarUrl={user.avatar}
+                            isMe={true}
+                        />
+                    )}
+
+                    {/* Mock other users */}
+                    <Avatar x={1100} y={200} name="Dra. Sarah" avatarUrl="https://i.pravatar.cc/150?u=1" />
+                    <Avatar x={1150} y={550} name="Marc" avatarUrl="https://i.pravatar.cc/150?u=2" />
+                </div>
             </div>
         </div>
     );

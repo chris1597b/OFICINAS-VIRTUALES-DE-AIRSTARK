@@ -1,21 +1,33 @@
 import React from 'react';
-import { Mic, MicOff, Video, VideoOff, Monitor, Settings, Hand, Menu } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, Monitor, Settings, Hand, Menu, Home, LogOut } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import classNames from 'classnames';
 import './Toolbar.css';
 
 export const Toolbar = ({ toggleSidebar }) => {
-    const { media, toggleMic, toggleCam } = useApp();
+    const { media, toggleMic, toggleCam, logout } = useApp();
+
+    const handleExit = () => {
+        if (window.confirm('¿Estás seguro de que deseas salir de la oficina virtual?')) {
+            logout();
+        }
+    };
 
     return (
         <div className="toolbar-container">
             <div className="toolbar-island">
-                {/* Mobile Menu Trigger - Visible on mobile via CSS usually or we can just add it here always */}
-                <button className="tool-btn mobile-only" onClick={toggleSidebar}>
+                {/* Mobile Menu Trigger */}
+                <button className="tool-btn mobile-only" onClick={toggleSidebar} title="Menú">
                     <Menu size={20} />
                 </button>
 
                 <div className="separator mobile-only" />
+
+                <button className="tool-btn" onClick={() => window.location.reload()} title="Ir al Inicio">
+                    <Home size={20} />
+                </button>
+
+                <div className="separator" />
 
                 <button
                     className={classNames('tool-btn', { active: media.mic })}
@@ -47,6 +59,10 @@ export const Toolbar = ({ toggleSidebar }) => {
 
                 <button className="tool-btn secondary" title="Configuración">
                     <Settings size={20} />
+                </button>
+
+                <button className="tool-btn danger" onClick={handleExit} title="Salir">
+                    <LogOut size={20} />
                 </button>
             </div>
         </div>
