@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Room } from './Room';
 import { Avatar } from './Avatar';
 import { RoomControls } from './RoomControls';
 import { useApp } from '../../context/AppContext';
+import { ZoomIn, ZoomOut, LocateFixed } from 'lucide-react';
 import './FloorPlan.css';
 
 // Room coordinates used for rendering bounds/collisions
@@ -24,6 +25,8 @@ const ROOM_COORDS = [
 export const FloorPlan = () => {
     const { user, setUser, rooms } = useApp();
     const [activeRoomId, setActiveRoomId] = useState(null);
+    const [zoom, setZoom] = useState(1);
+    const containerRef = useRef(null);
 
     // Keyboard Movement
     useEffect(() => {
@@ -63,8 +66,9 @@ export const FloorPlan = () => {
     const handleMapClick = (e) => {
         if (!user) return;
         const rect = e.currentTarget.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        // Since we use transform scale, we need to adjust the coordinates
+        const x = (e.clientX - rect.left) / zoom;
+        const y = (e.clientY - rect.top) / zoom;
 
         setUser(prev => ({ ...prev, x, y }));
     };
@@ -84,8 +88,24 @@ export const FloorPlan = () => {
 
     const activeRoomData = activeRoomId ? getRoomData(activeRoomId) : null;
 
+    const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.1, 2));
+    const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.5));
+
+    const handleLocateMe = () => {
+        if (!user || !containerRef.current) return;
+        const container = containerRef.current;
+        const targetX = (user.x * zoom) - (container.clientWidth / 2);
+        const targetY = (user.y * zoom) - (container.clientHeight / 2);
+
+        container.scrollTo({
+            left: targetX,
+            top: targetY,
+            behavior: 'smooth'
+        });
+    };
+
     return (
-        <div className="floor-plan-container">
+        <div className="floor-plan-container" ref={containerRef}>
             {/* HUD for Room Status */}
             {activeRoomData ? (
                 <div className="room-overlay-indicator in-room">
@@ -97,10 +117,30 @@ export const FloorPlan = () => {
                 </div>
             )}
 
+            {/* Map Controls */}
+            <div className="map-controls">
+                <button className="control-btn" onClick={handleZoomIn} title="Acercar">
+                    <ZoomIn size={18} />
+                </button>
+                <button className="control-btn" onClick={handleZoomOut} title="Alejar">
+                    <ZoomOut size={18} />
+                </button>
+                <button className="control-btn" onClick={handleLocateMe} title="Ubicarme">
+                    <LocateFixed size={18} />
+                </button>
+            </div>
+
             {/* Room Controls Panel */}
             {activeRoomData && <RoomControls currentRoom={activeRoomData} />}
 
-            <div className="floor-plan-map" onClick={handleMapClick}>
+            <div
+                className="floor-plan-map"
+                onClick={handleMapClick}
+                style={{
+                    transform: `scale(${zoom})`,
+                    transformOrigin: 'top left'
+                }}
+            >
                 {ROOM_COORDS.map(coords => {
                     const roomState = getRoomData(coords.id);
                     return (
