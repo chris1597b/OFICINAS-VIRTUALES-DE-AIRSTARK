@@ -155,6 +155,11 @@ export const FloorPlan = () => {
                 >
                     {ROOM_COORDS.map(coords => {
                         const roomState = getRoomData(coords.id);
+                        // Obtener los miembros asignados a esta sala
+                        const assignedMembers = (roomState.members || [])
+                            .map(memberId => teamMembers.find(m => m.id === memberId))
+                            .filter(Boolean);
+
                         return (
                             <Room
                                 key={coords.id}
@@ -166,6 +171,7 @@ export const FloorPlan = () => {
                                 width={coords.w}
                                 height={coords.h}
                                 onOpenControls={() => setSelectedRoomId(coords.id)}
+                                assignedMembers={assignedMembers}
                             />
                         );
                     })}

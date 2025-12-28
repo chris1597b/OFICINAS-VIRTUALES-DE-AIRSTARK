@@ -78,3 +78,47 @@
   background-image: radial-gradient(var(--color-slate) 1px, transparent 1px);
   background-size: 10px 10px;
 }
+
+/* Avatares de miembros asignados */
+.room-assigned-avatars {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  z-index: 5;
+}
+
+.assigned-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-secondary);
+  object-fit: cover;
+  margin-left: -8px;
+  transition: transform 0.2s, z-index 0.2s;
+  cursor: pointer;
+}
+
+.assigned-avatar:first-child {
+  margin-left: 0;
+}
+
+.assigned-avatar:hover {
+  transform: scale(1.2);
+  z-index: 20 !important;
+}
+
+.assigned-avatar-more {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-soft-teal);
+  color: var(--bg-primary);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -8px;
+  border: 2px solid var(--bg-secondary);
+}
