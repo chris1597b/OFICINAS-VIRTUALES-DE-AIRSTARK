@@ -1,25 +1,35 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Camera, LogIn } from 'lucide-react';
+import { Camera, Lock, User } from 'lucide-react';
 import './Onboarding.css';
 
 export const Onboarding = () => {
-    const { loginWithGoogle, login } = useApp();
-    const [name, setName] = useState('');
-    const [photo, setPhoto] = useState(null);
+    const { login } = useApp();
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
 
-    const handlePhotoUpload = (e) => {
+    const [photo, setPhoto] = useState(null);
+    const [photoPreview, setPhotoPreview] = useState(null);
+
+    const handlePhotoChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => setPhoto(reader.result);
+            reader.onloadend = () => {
+                setPhotoPreview(reader.result);
+                setPhoto(reader.result);
+            };
             reader.readAsDataURL(file);
         }
     };
 
-    const handleManualSubmit = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        if (name.trim()) login(name, photo);
+        const success = login(username, password, photo);
+        if (!success) {
+            setError('Credenciales incorrectas. Intente de nuevo.');
+        }
     };
 
     return (
@@ -30,38 +40,55 @@ export const Onboarding = () => {
                     <p>Oficina Virtual HealthTech</p>
                 </div>
 
-                <div className="login-options">
-                    <button className="google-login-btn" onClick={loginWithGoogle}>
-                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
-                        Entrar con cuenta de Google
-                    </button>
+                <div className="login-section">
+                    <h2 className="login-title">Iniciar Sesión</h2>
 
-                    <div className="divider">
-                        <span>O entrar como invitado</span>
-                    </div>
-
-                    <form onSubmit={handleManualSubmit}>
-                        <div className="photo-upload-section">
-                            <div className="photo-preview" style={{ backgroundImage: photo ? `url(${photo})` : 'none' }}>
-                                {!photo && <Camera size={24} opacity={0.5} />}
-                            </div>
-                            <label className="upload-btn">
-                                Foto
-                                <input type="file" accept="image/*" onChange={handlePhotoUpload} hidden />
+                    <form onSubmit={handleSubmit}>
+                        <div className="photo-upload-container">
+                            <label htmlFor="photo-input" className="photo-upload-label">
+                                {photoPreview ? (
+                                    <img src={photoPreview} alt="Preview" className="photo-preview-img" />
+                                ) : (
+                                    <div className="photo-placeholder">
+                                        <Camera size={32} />
+                                        <span>Subir Foto</span>
+                                    </div>
+                                )}
                             </label>
+                            <input
+                                id="photo-input"
+                                type="file"
+                                accept="image/*"
+                                onChange={handlePhotoChange}
+                                className="hidden-file-input"
+                            />
                         </div>
 
                         <div className="input-group">
+                            <label><User size={14} /> Usuario</label>
                             <input
                                 type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="Tu nombre..."
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder="Nombre de usuario"
                                 required
                             />
                         </div>
 
-                        <button type="submit" className="join-btn">Entrar</button>
+                        <div className="input-group">
+                            <label><Lock size={14} /> Contraseña</label>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Contraseña"
+                                required
+                            />
+                        </div>
+
+                        {error && <div className="login-error">{error}</div>}
+
+                        <button type="submit" className="join-btn">Entrar a la Oficina</button>
                     </form>
                 </div>
             </div>

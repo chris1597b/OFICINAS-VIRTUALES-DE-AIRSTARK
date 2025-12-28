@@ -102,3 +102,27 @@
     transform: translateX(0);
   }
 }
+
+.view-all-team-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  background: var(--color-soft-teal);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.view-all-team-btn:hover {
+  background: var(--color-clinical-white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(100, 255, 218, 0.3);
+}
+
+.view-all-team-btn:active {
+  transform: translateY(0);
+}

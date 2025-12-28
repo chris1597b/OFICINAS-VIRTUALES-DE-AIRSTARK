@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Users, FileText, CheckCircle, Clock, Circle } from 'lucide-react';
+import { TeamPanel } from './TeamPanel';
 import './Sidebar.css';
 
 export const Sidebar = () => {
-    const { rooms, getDeliverableStatus } = useApp();
+    const { rooms, getDeliverableStatus, teamMembers } = useApp();
+    const [showTeamPanel, setShowTeamPanel] = useState(false);
 
     // Filter only office rooms for the list
     const offices = rooms.filter(r => r.id.startsWith('o'));
@@ -26,49 +28,58 @@ export const Sidebar = () => {
     };
 
     return (
-        <aside className="sidebar">
-            <div className="sidebar-header">
-                <div className="logo-area">
-                    <div className="logo-icon">A</div>
-                    <span className="logo-text">AIRSTARK</span>
-                </div>
-            </div>
+        <>
+            {showTeamPanel && <TeamPanel onClose={() => setShowTeamPanel(false)} />}
 
-            <div className="sidebar-section">
-                <h3 className="section-title">
-                    <Users size={16} /> EQUIPO AIRSTARK
-                </h3>
-                {/* Simplified User List */}
-                <div className="team-grid">
-                    {/* Mock avatars for visual density */}
-                    {[1, 2, 3, 4].map(i => (
-                        <img key={i} src={`https://i.pravatar.cc/150?u=${i}`} className="mini-avatar" />
-                    ))}
-                    <div className="mini-avatar more">+6</div>
+            <aside className="sidebar">
+                <div className="sidebar-header">
+                    <div className="logo-area">
+                        <div className="logo-icon">A</div>
+                        <span className="logo-text">AIRSTARK</span>
+                    </div>
                 </div>
-            </div>
 
-            <div className="sidebar-section flex-grow">
-                <h3 className="section-title">
-                    <FileText size={16} /> ENTREGABLES SEMANALES
-                </h3>
-                <div className="deliverables-scroll">
-                    {offices.map(office => {
-                        const status = getDeliverableStatus(office.id);
-                        return (
-                            <div key={office.id} className="deliverable-card">
-                                <div className="dev-header">
-                                    <span className="dev-name">{office.name}</span>
-                                    {getStatusIcon(status)}
-                                </div>
-                                <div className={`dev-status-text ${getStatusClass(status)}`}>
-                                    {status}
-                                </div>
+                <div className="sidebar-section">
+                    <h3 className="section-title">
+                        <Users size={16} /> EQUIPO AIRSTARK
+                    </h3>
+                    <div className="team-grid">
+                        {teamMembers.slice(0, 4).map(member => (
+                            <div key={member.id} className="mini-avatar-wrapper" title={`${member.name} - ${member.role}`}>
+                                <img src={member.avatar} className="mini-avatar" alt={member.name} />
                             </div>
-                        );
-                    })}
+                        ))}
+                        {teamMembers.length > 4 && (
+                            <div className="mini-avatar more">+{teamMembers.length - 4}</div>
+                        )}
+                    </div>
+                    <button className="view-all-team-btn" onClick={() => setShowTeamPanel(true)}>
+                        Ver Todo el Equipo
+                    </button>
                 </div>
-            </div>
-        </aside>
+
+                <div className="sidebar-section flex-grow">
+                    <h3 className="section-title">
+                        <FileText size={16} /> ENTREGABLES SEMANALES
+                    </h3>
+                    <div className="deliverables-scroll">
+                        {offices.map(office => {
+                            const status = getDeliverableStatus(office.id);
+                            return (
+                                <div key={office.id} className="deliverable-card">
+                                    <div className="dev-header">
+                                        <span className="dev-name">{office.name}</span>
+                                        {getStatusIcon(status)}
+                                    </div>
+                                    <div className={`dev-status-text ${getStatusClass(status)}`}>
+                                        {status}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </aside>
+        </>
     );
 };

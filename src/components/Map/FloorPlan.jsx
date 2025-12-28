@@ -23,7 +23,7 @@ const ROOM_COORDS = [
 ];
 
 export const FloorPlan = () => {
-    const { user, setUser, rooms } = useApp();
+    const { user, setUser, rooms, teamMembers } = useApp();
     const [activeRoomId, setActiveRoomId] = useState(null);
     const [selectedRoomId, setSelectedRoomId] = useState(null); // Modal state
     const [zoom, setZoom] = useState(1);
@@ -138,6 +138,7 @@ export const FloorPlan = () => {
                         <RoomControls
                             currentRoom={selectedRoomData}
                             onClose={() => setSelectedRoomId(null)}
+                            onExitRoom={() => setUser(prev => ({ ...prev, x: 750, y: 500 }))}
                         />
                     </div>
                 </div>
@@ -180,9 +181,17 @@ export const FloorPlan = () => {
                         />
                     )}
 
-                    {/* Mock other users */}
-                    <Avatar x={1100} y={200} name="Dra. Sarah" avatarUrl="https://i.pravatar.cc/150?u=1" />
-                    <Avatar x={1150} y={550} name="Marc" avatarUrl="https://i.pravatar.cc/150?u=2" />
+                    {/* Active Team Members Avatars */}
+                    {teamMembers.filter(m => m.isActive && m.x && m.y).map(member => (
+                        <Avatar
+                            key={member.id}
+                            x={member.x - 24}
+                            y={member.y - 24}
+                            name={member.name}
+                            avatarUrl={member.avatar}
+                            isMe={false}
+                        />
+                    ))}
                 </div>
             </div>
         </div>

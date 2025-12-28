@@ -11,7 +11,8 @@
 }
 
 .room:hover {
-  background: rgba(100, 255, 218, 0.05);
+  background: rgba(100, 255, 218, 0.08); /* Ligeramente más visible */
+  cursor: pointer;
 }
 
 .room-interact-btn {

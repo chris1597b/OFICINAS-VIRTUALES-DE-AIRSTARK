@@ -12,6 +12,7 @@ export const Room = ({ id, x, y, width, height, type, label, onOpenControls }) =
                 width: width,
                 height: height
             }}
+            onClick={onOpenControls}
         >
             <div className="room-label">{label}</div>
             <div className="room-floor"></div>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { MessageSquare, FileText, CheckSquare, Edit2, Plus, X } from 'lucide-react';
+import { MessageSquare, FileText, CheckSquare, Edit2, Plus, X, LogOut, Users } from 'lucide-react';
 import './RoomControls.css';
 
-export const RoomControls = ({ currentRoom, onClose }) => {
+export const RoomControls = ({ currentRoom, onClose, onExitRoom }) => {
     const {
         updateRoomName,
         updateRoomNote,
@@ -11,7 +11,9 @@ export const RoomControls = ({ currentRoom, onClose }) => {
         subscribeToChat,
         deliverables,
         addDeliverable,
-        toggleDeliverable
+        toggleDeliverable,
+        teamMembers,
+        user: currentUser
     } = useApp();
 
     const [activeTab, setActiveTab] = useState('chat');
@@ -76,9 +78,19 @@ export const RoomControls = ({ currentRoom, onClose }) => {
                         </h3>
                     )}
                 </div>
-                <button className="close-panel-btn" onClick={onClose}>
-                    <X size={20} />
-                </button>
+                <div className="header-actions">
+                    <button className="close-panel-btn danger" onClick={() => {
+                        if (window.confirm('¿Salir de esta oficina? Serás movido al pasillo.')) {
+                            onExitRoom();
+                            onClose();
+                        }
+                    }} title="Abandonar Habitación">
+                        <LogOut size={18} />
+                    </button>
+                    <button className="close-panel-btn" onClick={onClose} title="Cerrar Panel">
+                        <X size={20} />
+                    </button>
+                </div>
             </div>
 
             <div className="tabs">
@@ -90,6 +102,9 @@ export const RoomControls = ({ currentRoom, onClose }) => {
                 </button>
                 <button className={`tab-btn ${activeTab === 'todos' ? 'active' : ''}`} onClick={() => setActiveTab('todos')}>
                     <CheckSquare size={14} /> Entregables
+                </button>
+                <button className={`tab-btn ${activeTab === 'team' ? 'active' : ''}`} onClick={() => setActiveTab('team')}>
+                    <Users size={14} /> Equipo
                 </button>
             </div>
 
@@ -140,6 +155,37 @@ export const RoomControls = ({ currentRoom, onClose }) => {
                             <input value={newTodo} onChange={(e) => setNewTodo(e.target.value)} placeholder="Nuevo entregable..." />
                             <button type="submit" className="add-icon"><Plus size={16} /></button>
                         </form>
+                    </div>
+                )}
+
+                {activeTab === 'team' && (
+                    <div className="team-view">
+                        <div className="team-subheader">Responsables del Área</div>
+                        <div className="assigned-members">
+                            {currentRoom.members?.map(mId => {
+                                const member = teamMembers.find(tm => tm.id === mId);
+                                if (!member) return null;
+                                return (
+                                    <div key={member.id} className="member-card-mini">
+                                        <img src={member.avatar} alt={member.name} />
+                                        <div className="member-info">
+                                            <div className="m-name">{member.name}</div>
+                                            <div className="m-role">{member.role}</div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <div className="team-subheader">En esta sala ahora</div>
+                        <div className="users-in-room">
+                            <div className="online-user-tag">
+                                <div className="online-dot"></div>
+                                <img src={currentUser.avatar} alt={currentUser.name} className="user-mini-img" />
+                                <span>{currentUser.name} (Tú)</span>
+                            </div>
+                            {/* Aquí se podrían mapear otros usuarios si hubiera sistema multi-usuario */}
+                        </div>
                     </div>
                 )}
             </div>
