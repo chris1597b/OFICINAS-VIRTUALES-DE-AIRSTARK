@@ -247,6 +247,16 @@
   background: rgba(0, 255, 136, 0.2);
 }
 
+.edit-action-btn.delete {
+  color: var(--text-secondary);
+}
+
+.edit-action-btn.delete:hover {
+  background: rgba(255, 107, 107, 0.15);
+  color: var(--color-alert);
+  border-color: var(--color-alert);
+}
+
 .edit-action-btn.cancel {
   color: var(--color-alert);
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { X, MapPin, Edit2, Save, XCircle } from 'lucide-react';
+import { X, MapPin, Edit2, Save, XCircle, Trash2 } from 'lucide-react';
 import './TeamPanel.css';
 
 export const TeamPanel = ({ onClose }) => {
@@ -10,7 +10,8 @@ export const TeamPanel = ({ onClose }) => {
         rooms,
         updateMemberRole,
         assignMemberToRoom,
-        removeMemberFromRoom
+        removeMemberFromRoom,
+        deleteMember
     } = useApp();
 
     const [editingMemberId, setEditingMemberId] = useState(null);
@@ -72,9 +73,14 @@ export const TeamPanel = ({ onClose }) => {
                                                 </button>
                                             </>
                                         ) : (
-                                            <button className="edit-action-btn edit" onClick={() => handleStartEdit(member)} title="Editar miembro">
-                                                <Edit2 size={16} />
-                                            </button>
+                                            <>
+                                                <button className="edit-action-btn edit" onClick={() => handleStartEdit(member)} title="Editar miembro">
+                                                    <Edit2 size={16} />
+                                                </button>
+                                                <button className="edit-action-btn delete" onClick={() => deleteMember(member.id)} title="Eliminar miembro">
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </>
                                         )}
                                     </div>
 
