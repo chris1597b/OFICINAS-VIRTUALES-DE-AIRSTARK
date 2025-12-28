@@ -1,5 +1,5 @@
 .selfie-view-container {
-  position: absolute;
+  position: fixed;
   bottom: 100px;
   right: 20px;
   width: 180px;
