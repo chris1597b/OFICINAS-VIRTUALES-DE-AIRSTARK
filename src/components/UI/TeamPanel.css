@@ -203,3 +203,163 @@
   font-size: 0.8rem;
   font-style: italic;
 }
+
+/* Controles de edición */
+.card-edit-controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
+}
+
+.team-member-card {
+  position: relative;
+}
+
+.edit-action-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.edit-action-btn.edit {
+  color: var(--text-secondary);
+}
+
+.edit-action-btn.edit:hover {
+  background: rgba(100, 255, 218, 0.15);
+  color: var(--color-soft-teal);
+  border-color: var(--color-soft-teal);
+}
+
+.edit-action-btn.save {
+  color: #00ff88;
+}
+
+.edit-action-btn.save:hover {
+  background: rgba(0, 255, 136, 0.2);
+}
+
+.edit-action-btn.cancel {
+  color: var(--color-alert);
+}
+
+.edit-action-btn.cancel:hover {
+  background: rgba(255, 107, 107, 0.2);
+}
+
+.team-member-card.editing {
+  border-color: var(--color-soft-teal);
+  box-shadow: 0 0 20px rgba(100, 255, 218, 0.15);
+}
+
+/* Input de edición de rol */
+.role-edit-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.edit-label {
+  font-size: 0.75rem;
+  color: var(--color-slate);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.role-edit-input {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(100, 255, 218, 0.3);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.role-edit-input:focus {
+  border-color: var(--color-soft-teal);
+  box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.1);
+}
+
+.role-edit-input::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Checkboxes de áreas */
+.areas-checkboxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.area-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.area-checkbox-item:hover {
+  background: rgba(100, 255, 218, 0.1);
+  color: var(--text-primary);
+}
+
+.area-checkbox-item input[type="checkbox"] {
+  accent-color: var(--color-soft-teal);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.area-checkbox-item input[type="checkbox"]:checked + span {
+  color: var(--color-soft-teal);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .team-grid-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .areas-checkboxes {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .team-panel-container {
+    width: 95vw;
+    height: 90vh;
+  }
+  
+  .team-panel-header {
+    padding: 15px 20px;
+  }
+  
+  .team-panel-content {
+    padding: 15px;
+  }
+  
+  .areas-checkboxes {
+    grid-template-columns: 1fr;
+  }
+}
